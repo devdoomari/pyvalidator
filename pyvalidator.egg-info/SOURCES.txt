@@ -1,3 +1,5 @@
+DESCRIPTION.rst
+MANIFEST.in
 setup.py
 pyvalidator/__init__.py
 pyvalidator/errorbucket.py

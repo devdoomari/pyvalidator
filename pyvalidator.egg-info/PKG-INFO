@@ -1,0 +1,20 @@
+Metadata-Version: 1.1
+Name: pyvalidator
+Version: 0.0.1
+Summary: PyValidator
+Home-page: https://github.com/devdoomari/pyvalidator
+Author: DevDoomari (Gukky)
+Author-email: devdoomari@gmail.com
+License: MIT
+Description: PyValidator
+        ===========
+        
+Keywords: sample setuptools development
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7

@@ -96,7 +96,7 @@ class Validator(object):
         child_schema = self._schema[0]
         child_validator = Validator(child_schema)
         error_bucket = ErrorBucket()
-        if schema_type(data) != ITERABLE:
+        if schema_type(data) is not ITERABLE:
             error = WrongType(type(self._schema), type(data))
             error_bucket.addError('', error)
             return error_bucket
@@ -107,6 +107,10 @@ class Validator(object):
 
     def _validate_dict(self, data_dict):
         error_bucket = ErrorBucket()
+        if schema_type(data_dict) is not DICT:
+            error = WrongType(type(data_dict), type(self._schema))
+            error_bucket.addError('', error)
+            return error_bucket
         requires = {}
         missing_keys = []
         optionals = {}
@@ -115,7 +119,7 @@ class Validator(object):
         for schema_key in self._schema:
             schema_item = self._schema[schema_key]
             if type(schema_key) == Optional:
-                optional_keys[schema_key.key] = schema_item
+                optionals[schema_key.key] = schema_item
             else:
                 missing_keys.append(schema_key)
                 requires[schema_key] = schema_item

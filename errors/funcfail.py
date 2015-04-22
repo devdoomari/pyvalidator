@@ -1,5 +1,6 @@
 class FuncFail(Exception):
     def __init__(self, func, var):
+        self.error_name = "func_fail"
         self.func = func
         self.var = var
 

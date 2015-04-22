@@ -1,5 +1,6 @@
 class WrongType(Exception):
     def __init__(self, got, instead_of):
+        self.error_name = "wrong_type"
         self.got = got
         self.instead_of = instead_of
 

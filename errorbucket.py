@@ -6,7 +6,8 @@ class ErrorBucket:
         self.errors = {}
         self.custom_errors = []
 
-    def addError(self, err_type, var_name, err_obj):
+    def addError(self, var_name, err_obj):
+        err_type = err_obj.error_name
         if err_type not in self.errors:
             self.errors[err_type] = {}
         if var_name in self.errors[err_type]:
@@ -21,12 +22,14 @@ class ErrorBucket:
         self.custom_errors.append(error)
 
     def mergeChildBucket(self, child, child_namespace):
+        child_namespace = str(child_namespace)
         self.__mergeBucket__(child, child_namespace + '.')
 
     def mergeBucket(self, child):
         self.__mergeBucket__(child, '')
 
     def __mergeBucket__(self, child, append_ns):
+        append_ns = str(append_ns)
         for err_type in child.errors:
             child_var_list = child.errors[err_type]
             if err_type not in self.errors:

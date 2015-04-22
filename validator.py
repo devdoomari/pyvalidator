@@ -5,7 +5,6 @@ COMPARABLE, CALLABLE, VALIDATOR, TYPE, DICT, ITERABLE = range(6)
 
 
 class And(object):
-
     def __init__(self, *args, **kw):
         self._args = args
 
@@ -24,7 +23,6 @@ class And(object):
 
 
 class Or(And):
-
     def validate(self, data):
         child_validators = []
         error_bucket = ErrorBucket()
@@ -36,9 +34,20 @@ class Or(And):
             error_bucket.mergeBucket(child_error_bucket)
         return error_bucket
 
+
 class CustomError(object):
-    def __init__(self, *args, **kw):
-        pass
+    def __init__(self, validator, custom_error):
+        self.validator = validator
+        self.custom_error = custom_error
+
+    def validate(self, data):
+        error_bucket = self.validator.validate(data)
+        if not error_bucket.isEmpty():
+            error_bucket.addCustomError(self.custom_error)
+        return error_bucket
+
+# class CustomMissingkeyError(object):
+#     def __init__(self, )
 
 
 def schema_type(schema):
@@ -58,7 +67,6 @@ def schema_type(schema):
 
 
 class Validator(object):
-
     def __init__(self, schema):
         self._schema = schema
         self._schema_type = schema_type(self._schema)
@@ -67,18 +75,28 @@ class Validator(object):
         error_bucket = ErrorBucket()
         if self._schema != data:
             error = NotEqual(self._schema, data)
-            error_bucket.addError('not_equal', '', error)
+            error_bucket.addError('', error)
         return error_bucket
 
     def _validate_iterable(self, data):
-        pass
+        child_schema = self._schema[0]
+        child_validator = Validator(child_schema)
+        error_bucket = ErrorBucket()
+        if schema_type(data) != ITERABLE:
+            error = WrongType(type(self._schema), type(data))
+            error_bucket.addError('', error)
+            return error_bucket
+        for (child_index, child_item) in enumerate(data):
+            child_bucket = child_validator.validate(child_item)
+            error_bucket.__mergeBucket__(child_bucket, child_index)
+        return error_bucket
 
     def _validate_type(self, data):
         error_bucket = ErrorBucket()
         if not isinstance(data, self._schema):
             child_type = str(type(data))
             error = WrongType(type(data), self._schema)
-            error_bucket.addError('wrong_type', '', error)
+            error_bucket.addError('', error)
         return error_bucket
 
     def _valiate_validator(self, data):
@@ -91,7 +109,7 @@ class Validator(object):
         error_bucket = ErrorBucket()
         if not self._schema(data):
             error = FuncFail(self._schema, data)
-            error_bucket.addError('func_fail', '', error)
+            error_bucket.addError('', error)
         return error_bucket
 
     def validate(self, data):
@@ -99,14 +117,7 @@ class Validator(object):
             return self._validate_comparable(data)
 
         if self._schema_type == ITERABLE:
-
-            child_schema = self._schema[0]
-            child_validator = Validator(child_schema)
-            for (child_data, child_index) in enumerate(data):
-                child_bucket = child_validator.validate(child_data)
-                self._error_bucket.mergeChildBucket(child_bucket,
-                                                    child_index)
-            return self._error_bucket
+            return self._validate_iterable(data)
 
         if self._schema_type == TYPE:
             return self._validate_type(data)

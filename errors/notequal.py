@@ -1,5 +1,6 @@
 class NotEqual(Exception):
     def __init__(self, instead_of, got):
+        self.error_name = "not_equal"
         self.instead_of = instead_of
         self.got = got
 
@@ -20,7 +21,7 @@ class NotEqual(Exception):
         return 0
 
     def __repr__(self):
-        got_str = str(self.got)[7:-2]
-        instead_of_str = str(self.instead_of)[7:-2]
+        got_str = str(self.got)
+        instead_of_str = str(self.instead_of)
         return "Not Equal: got {0} instead of {1}" \
                .format(got_str, instead_of_str)

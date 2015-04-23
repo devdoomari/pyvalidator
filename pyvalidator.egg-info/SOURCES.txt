@@ -11,6 +11,7 @@ pyvalidator.egg-info/pbr.json
 pyvalidator.egg-info/requires.txt
 pyvalidator.egg-info/top_level.txt
 pyvalidator/errors/__init__.py
+pyvalidator/errors/funcexception.py
 pyvalidator/errors/funcfail.py
 pyvalidator/errors/missingkey.py
 pyvalidator/errors/notequal.py
@@ -28,5 +29,6 @@ pyvalidator/tests/test_errorbucket.py
 pyvalidator/tests/test_iterableschema.py
 pyvalidator/tests/test_or.py
 pyvalidator/tests/test_typeschema.py
+pyvalidator/tests/test_using.py
 pyvalidator/utils/__init__.py
 pyvalidator/utils/ordered_list.py

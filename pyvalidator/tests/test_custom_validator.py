@@ -16,9 +16,7 @@ class TestCustomValidatorSchema(ErrorBucketTestCase):
                 self._args = args
 
             def __repr__(self):
-                return '%s(%s)' \
-                    % (self.__class__.__name__,
-                                                         ', '.join(repr(a) for a in self._args))
+                return "ErrorCounter({0})".format(args)
 
             def validate(self, data):
                 error_bucket = ErrorBucket()

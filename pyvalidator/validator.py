@@ -75,7 +75,7 @@ class Using(object):
 
 
 class CustomError(object):
-    def __init__(self, schema, custom_error):
+    def __init__(self, custom_error, schema):
         self.schema = schema
         self.custom_error = custom_error
 

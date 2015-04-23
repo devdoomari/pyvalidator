@@ -12,29 +12,29 @@ from utils import OrderedList
 
 
 class TestDictList(ErrorBucketTestCase):
-    def test_dict_list1(self):
-        validator = Validator([{
-            'name': And(str, len),
-            'age': And(Using(int), lambda n: 18 <= n <= 99),
-            Optional('sex'): And(str, Using(str.lower), lambda s: s in
-                                 ('male', 'female'))
-        }])
+    # def test_dict_list1(self):
+    #     validator = Validator([{
+    #         'name': And(str, len),
+    #         'age': And(Using(int), lambda n: 18 <= n <= 99),
+    #         Optional('sex'): And(str, Using(str.lower), lambda s: s in
+    #                              ('male', 'female'))
+    #     }])
 
-        data = [{'name': 'Sue',
-                 'age': '28',
-                 'sex': 'FEMALE'}, {'name': 'Sam',
-                                    'age': '42'},
-                {'name': 'Sacha',
-                 'age': '20',
-                 'sex': 'Male'}]
-        validated = validator.validate(data)
-        assert validated == [{'name': 'Sue',
-                              'age': 28,
-                              'sex': 'female'}, {'name': 'Sam',
-                                                 'age': 42},
-                             {'name': 'Sacha',
-                              'age': 20,
-                              'sex': 'male'}]
+    #     data = [{'name': 'Sue',
+    #              'age': '28',
+    #              'sex': 'FEMALE'}, {'name': 'Sam',
+    #                                 'age': '42'},
+    #             {'name': 'Sacha',
+    #              'age': '20',
+    #              'sex': 'Male'}]
+    #     validated = validator.validate(data)
+    #     assert validated == [{'name': 'Sue',
+    #                           'age': 28,
+    #                           'sex': 'female'}, {'name': 'Sam',
+    #                                              'age': 42},
+    #                          {'name': 'Sacha',
+    #                           'age': 20,
+    #                           'sex': 'male'}]
 
     def test_dict_list2(self):
         is_gender = lambda s: s in ('male', 'female')

@@ -24,7 +24,8 @@ pyvalidator/tests/test_callable.py
 pyvalidator/tests/test_comparable.py
 pyvalidator/tests/test_custom_validator.py
 pyvalidator/tests/test_dict.py
-pyvalidator/tests/test_dict_surplus.py
+pyvalidator/tests/test_dict_list.py
+pyvalidator/tests/test_dict_mixed.py
 pyvalidator/tests/test_errorbucket.py
 pyvalidator/tests/test_iterableschema.py
 pyvalidator/tests/test_or.py

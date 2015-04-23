@@ -1,10 +1,15 @@
+import pprint
 from utils import OrderedList
+
+global __REPR__
 
 __REPR__ = """
 Generic Errors:
+{0}
+
 
 Custom Errors:
-
+{1}
 """
 
 
@@ -14,7 +19,10 @@ class ErrorBucket(Exception):
         self.custom_errors = []
 
     def __repr__(self):
-        pass
+        pretty_print = pprint.PrettyPrinter(depth=4)
+        generic_errors = pretty_print.pformat(self.errors)
+        custom_errors = pretty_print.pformat(self.custom_errors)
+        return __REPR__.format(self.errors, self.custom_errors)
 
     def addError(self, var_name, err_obj):
         err_type = err_obj.error_name

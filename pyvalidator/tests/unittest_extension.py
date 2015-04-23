@@ -13,6 +13,7 @@ class ErrorBucketTestCase(unittest.TestCase):
         try:
             test_data = validator.validate(data)
         except ErrorBucket as error_bucket:
+            print error_bucket
             if errors is not None:
                 try:
                     self.assertEquals(error_bucket.errors, errors)

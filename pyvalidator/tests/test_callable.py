@@ -1,4 +1,5 @@
 import unittest
+from unittest_extension import ErrorBucketTestCase
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
@@ -7,7 +8,7 @@ from validator import Validator
 from errors import WrongType, FuncFail
 
 
-class TestCallableSchema(unittest.TestCase):
+class TestCallableSchema(ErrorBucketTestCase):
     def test_always_true_callable(self):
         test_data = 'hello world'
 
@@ -15,9 +16,7 @@ class TestCallableSchema(unittest.TestCase):
             return True
 
         always_true_validator = Validator(return_true)
-        self.assertTrue(
-            always_true_validator.validate(test_data).isEmpty()
-        )
+        always_true_validator.validate(test_data)
 
     def test_always_false_callable(self):
         test_data = 'hello world!'
@@ -26,12 +25,9 @@ class TestCallableSchema(unittest.TestCase):
             return False
 
         always_false_validator = Validator(return_false)
-        bucket = always_false_validator.validate(test_data)
-        self.assertEquals(bucket.errors, {
-            'func_fail': {
-                '': FuncFail(return_false, test_data)
-                }
-            })
+        self.assertErrorBucket(
+            always_false_validator, test_data,
+            errors={'func_fail': {'': FuncFail(return_false, test_data)}})
 
     def test_is_dict_callable(self):
         ok_data = {'wow': 'so gukky'}
@@ -41,15 +37,12 @@ class TestCallableSchema(unittest.TestCase):
             return type(input) == dict
 
         is_dict_validator = Validator(is_dict)
-        self.assertTrue(
-            is_dict_validator.validate(ok_data).isEmpty())
+        is_dict_validator.validate(ok_data)
 
-        bucket = is_dict_validator.validate(nope_data)
-        self.assertEquals(bucket.errors, {
-            'func_fail': {
-                '': FuncFail(is_dict, nope_data)
-                }
-            })
+        self.assertErrorBucket(
+            is_dict_validator, nope_data,
+            errors={'func_fail': {'': FuncFail(is_dict, nope_data)}})
+
 
 if __name__ == '__main__':
     unittest.main()

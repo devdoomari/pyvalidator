@@ -1,10 +1,20 @@
 from utils import OrderedList
 
+__REPR__ = """
+Generic Errors:
 
-class ErrorBucket:
+Custom Errors:
+
+"""
+
+
+class ErrorBucket(Exception):
     def __init__(self):
         self.errors = {}
         self.custom_errors = []
+
+    def __repr__(self):
+        pass
 
     def addError(self, var_name, err_obj):
         err_type = err_obj.error_name

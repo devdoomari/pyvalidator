@@ -1,5 +1,8 @@
+from errors import NotEqual, WrongType
+from errors import SurplusKey, MissingKey
+from errors import FuncFail, FuncException
+from utils import OrderedList
 from errorbucket import ErrorBucket
-from errors import WrongType, FuncFail, NotEqual, SurplusKey, MissingKey
 
 COMPARABLE, CALLABLE, VALIDATOR, TYPE, DICT, ITERABLE = range(6)
 
@@ -33,6 +36,23 @@ class Or(And):
                 return ErrorBucket()
             error_bucket.mergeBucket(child_error_bucket)
         return error_bucket
+
+
+class Using(object):
+    def __init__(self, func, schema):
+        self.func = func
+        self.schema = schema
+
+    def validate(self, data):
+        error_bucket = ErrorBucket()
+        try:
+            data = self.func(data)
+        except Exception as e:
+            error = FuncException(self.func, data, e)
+            error_bucket.addError('', error)
+            return error_bucket
+        validator = Validator(self.schema)
+        return validator.validate(data)
 
 
 class CustomError(object):
@@ -175,7 +195,13 @@ class Validator(object):
 
     def _validate_callable(self, data):
         error_bucket = ErrorBucket()
-        if not self._schema(data):
+        result = False
+        try:
+            result = self._schema(data)
+        except Exception as e:
+            error = FuncException(self._schema, data, e)
+            error_bucket.addError('', error)
+        if not error:
             error = FuncFail(self._schema, data)
             error_bucket.addError('', error)
         return error_bucket

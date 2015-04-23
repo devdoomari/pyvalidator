@@ -31,7 +31,7 @@ class TestDictMixedSchema(ErrorBucketTestCase):
                     'some int': WrongType(str, int),
                     'nested_dict': WrongType(list, dict)
                 },
-                'missing_key': {'': MissingKey('customerr', str)}
+                'missing_key': {'customerr': MissingKey('customerr', str)}
             },
             custom_errors=['MISSINGKEY T.T'])
 

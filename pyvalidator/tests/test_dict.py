@@ -23,20 +23,20 @@ class TestDictSchema(ErrorBucketTestCase):
         self.assertErrorBucket(
             simple_validator, {'test': 'hello',
                                'wow so': 'doge'},
-            errors={'surplus_key': {'': SurplusKey('wow so', 'doge')}})
+            errors={'surplus_key': {'wow so': SurplusKey('wow so', 'doge')}})
 
     def test_missing(self):
         simple_validator = Validator({'test': 'hello'})
         self.assertErrorBucket(
             simple_validator, {},
-            errors={'missing_key': {'': MissingKey('test', 'hello')}})
+            errors={'missing_key': {'test': MissingKey('test', 'hello')}})
 
     def test_missing_custom_error(self):
         validator = Validator(
             {'test': CustomMissingkeyError('MISSINGKEY!', 'hello')})
         self.assertErrorBucket(
             validator, {},
-            errors={'missing_key': {'': MissingKey('test', 'hello')}},
+            errors={'missing_key': {'test': MissingKey('test', 'hello')}},
             custom_errors=['MISSINGKEY!'])
 
     def test_optional_simple(self):

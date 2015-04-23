@@ -15,13 +15,16 @@ class And(object):
         return '%s(%s)' % (self.__class__.__name__,
                            ', '.join(repr(a) for a in self._args))
 
+    def __eq__(self, other):
+        return self._args == other._args
+
     def validate(self, data):
         child_validators = []
         error_bucket = ErrorBucket()
         for child_schema in self._args:
             child_validator = Validator(child_schema)
             try:
-                temp_data = child_validator.validate(data)
+                data = child_validator.validate(data)
             except ErrorBucket as e:
                 error_bucket.mergeBucket(e)
         if not error_bucket.isEmpty():
@@ -37,7 +40,7 @@ class Or(And):
         for child_schema in self._args:
             child_validator = Validator(child_schema)
             try:
-                temp_data = child_validator.validate(data)
+                data = child_validator.validate(data)
             except ErrorBucket as e:
                 error_bucket.mergeBucket(e)
             else:
@@ -48,7 +51,7 @@ class Or(And):
 
 
 class Using(object):
-    def __init__(self, func, schema):
+    def __init__(self, func, schema=None):
         self.func = func
         self.schema = schema
 
@@ -60,6 +63,8 @@ class Using(object):
             error = FuncException(self.func, data, e)
             error_bucket.addError('', error)
             raise error_bucket
+        if self.schema is None:
+            return data
         validator = Validator(self.schema)
         try:
             data = validator.validate(data)
@@ -146,7 +151,11 @@ class Validator(object):
             try:
                 data[child_index] = child_validator.validate(child_item)
             except ErrorBucket as e:
-                error_bucket.__mergeBucket__(e, child_index)
+                if (schema_type(child_schema) == ITERABLE or
+                    schema_type(child_schema) == DICT):
+                    error_bucket.mergeChildBucket(e, child_index)
+                else:
+                    error_bucket.__mergeBucket__(e, child_index)
         if not error_bucket.isEmpty():
             raise error_bucket
         return data
@@ -181,7 +190,8 @@ class Validator(object):
                     error_bucket.__mergeBucket__(e, data_key)
             else:
                 surplus_data[data_key] = data_item
-                for (optional_data, optionals_key) in enumerate(optionals):
+                for optionals_key in optionals:
+                    optional_data = optionals[optionals_key]
                     optional_key_tester = Validator(optionals_key)
                     try:
                         optional_key_temp = optional_key_tester.validate(data_key)
@@ -199,7 +209,7 @@ class Validator(object):
         for surplus_key in surplus_data:
             surplus_item = surplus_data[surplus_key]
             error = SurplusKey(surplus_key, surplus_item)
-            error_bucket.addError('', error)
+            error_bucket.addError(surplus_key, error)
         # 4. raise errors on missing_keys
         for missing_key in missing_keys:
             missing_item = requires[missing_key]
@@ -208,7 +218,7 @@ class Validator(object):
                 error = MissingKey(missing_key, missing_item.schema)
             else:
                 error = error = MissingKey(missing_key, missing_item)
-            error_bucket.addError('', error)
+            error_bucket.addError(missing_key, error)
         if not error_bucket.isEmpty():
             raise error_bucket
         return data_dict

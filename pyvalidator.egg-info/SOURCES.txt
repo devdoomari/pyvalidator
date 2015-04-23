@@ -30,5 +30,6 @@ pyvalidator/tests/test_iterableschema.py
 pyvalidator/tests/test_or.py
 pyvalidator/tests/test_typeschema.py
 pyvalidator/tests/test_using.py
+pyvalidator/tests/unittest_extension.py
 pyvalidator/utils/__init__.py
 pyvalidator/utils/ordered_list.py

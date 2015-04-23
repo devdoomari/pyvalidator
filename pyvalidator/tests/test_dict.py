@@ -43,33 +43,6 @@ class TestDictSchema(ErrorBucketTestCase):
         validator = Validator({Optional('hello'): 'world'})
         data = validator.validate({})
 
-    # def test_arrayin_dict(self):
-    #     schema = {'test': 'wow'}
-
-    def test_mixed_dict(self):
-        schema = {
-            Optional('hello'): 'world',
-            'wow so': 'doge',
-            'some int': int,
-            'nested_dict': {'nest': 'le'},
-            'customerr': CustomMissingkeyError('MISSINGKEY T.T', str)
-        }
-        validator = Validator(schema)
-        self.assertErrorBucket(
-            validator, {
-                'wow so': 'doge',
-                'some int': 'not int',
-                'nested_dict': [123, 456],
-            },
-            errors={
-                'wrong_type': {
-                    'some int': WrongType(str, int),
-                    'nested_dict': WrongType(list, dict)
-                },
-                'missing_key': {'': MissingKey('customerr', str)}
-            },
-            custom_errors=['MISSINGKEY T.T'])
-
 
 if __name__ == '__main__':
     unittest.main()

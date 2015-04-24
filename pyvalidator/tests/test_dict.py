@@ -10,20 +10,20 @@ from utils import OrderedList
 
 
 class TestDictSchema(ErrorBucketTestCase):
-    # def test_simple(self):
+    def test_simple(self):
 
-    #     simple_validator = Validator({'test': 'hello'})
-    #     simple_validator.validate({'test': 'hello'})
+        simple_validator = Validator({'test': 'hello'})
+        simple_validator.validate({'test': 'hello'})
 
-    #     simple_validator2 = Validator({'test': 'hello', 'wow so': 'doge'})
-    #     simple_validator2.validate({'test': 'hello', 'wow so': 'doge'})
+        simple_validator2 = Validator({'test': 'hello', 'wow so': 'doge'})
+        simple_validator2.validate({'test': 'hello', 'wow so': 'doge'})
 
-    # def test_surplus(self):
-    #     simple_validator = Validator({'test': 'hello'})
-    #     self.assertErrorBucket(
-    #         simple_validator, {'test': 'hello',
-    #                            'wow so': 'doge'},
-    #         errors={'surplus_key': {'wow so': SurplusKey('wow so', 'doge')}})
+    def test_surplus(self):
+        simple_validator = Validator({'test': 'hello'})
+        self.assertErrorBucket(
+            simple_validator, {'test': 'hello',
+                               'wow so': 'doge'},
+            errors={'surplus_key': {'wow so': SurplusKey('wow so', 'doge')}})
 
     def test_missing(self):
         simple_validator = Validator({'test': 'hello'})
@@ -39,9 +39,9 @@ class TestDictSchema(ErrorBucketTestCase):
             errors={'missing_key': {'test': MissingKey('test', 'hello')}},
             custom_errors=['MISSINGKEY!'])
 
-    # def test_optional_simple(self):
-    #     validator = Validator({Optional('hello'): 'world'})
-    #     data = validator.validate({})
+    def test_optional_simple(self):
+        validator = Validator({Optional('hello'): 'world'})
+        data = validator.validate({})
 
 
 if __name__ == '__main__':

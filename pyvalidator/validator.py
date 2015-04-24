@@ -109,6 +109,9 @@ class CustomMissingkeyError(object):
             raise e
         return data
 
+    def get_custom_error(self, missingkey=None):
+        return self.custom_error
+
 
 def schema_type(schema):
     """Return priority for a given object."""
@@ -166,7 +169,6 @@ class Validator(object):
             error = WrongType(type(data_dict), type(self._schema))
             error_bucket.addError('', error)
             raise error_bucket
-        requires = {}
         missing_keys = []
         optionals = {}
         surplus_data = {}
@@ -177,13 +179,12 @@ class Validator(object):
                 optionals[schema_key.key] = schema_item
             else:
                 missing_keys.append(schema_key)
-                requires[schema_key] = schema_item
         # 2. validate data.
         for data_key in data_dict:
             data_item = data_dict[data_key]
             if data_key in missing_keys:
                 missing_keys.remove(data_key)
-                child_validator = Validator(requires[data_key])
+                child_validator = Validator(self._schema[data_key])
                 try:
                     data_dict[data_key] = child_validator.validate(data_item)
                 except ErrorBucket as e:
@@ -212,12 +213,13 @@ class Validator(object):
             error_bucket.addError(surplus_key, error)
         # 4. raise errors on missing_keys
         for missing_key in missing_keys:
-            missing_item = requires[missing_key]
-            if type(missing_item) == CustomMissingkeyError:
-                error_bucket.addCustomError(missing_item.custom_error)
-                error = MissingKey(missing_key, missing_item.schema)
+            missing_schema = self._schema[missing_key]
+            if isinstance(missing_schema, CustomMissingkeyError):
+                error_bucket.addCustomError(
+                    missing_schema.get_custom_error(missingkey=missing_key))
+                error = MissingKey(missing_key, missing_schema.schema)
             else:
-                error = error = MissingKey(missing_key, missing_item)
+                error = MissingKey(missing_key, missing_schema)
             error_bucket.addError(missing_key, error)
         if not error_bucket.isEmpty():
             raise error_bucket

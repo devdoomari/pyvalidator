@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='pyvalidator',
-    version='0.0.9',
+    version='0.0.13',
 
     description='PyValidator',
     long_description=long_description,

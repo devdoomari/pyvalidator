@@ -23,6 +23,7 @@ pyvalidator/tests/test_and.py
 pyvalidator/tests/test_callable.py
 pyvalidator/tests/test_comparable.py
 pyvalidator/tests/test_custom_validator.py
+pyvalidator/tests/test_customerror.py
 pyvalidator/tests/test_dict.py
 pyvalidator/tests/test_dict_list.py
 pyvalidator/tests/test_dict_mixed.py

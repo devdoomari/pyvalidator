@@ -20,8 +20,14 @@ class SurplusKey(Exception):
             return -1
         return 0
 
+    def __hash__(self):
+        return (hash(self.error_name) ^ hash(self.key) ^ hash(self.data))
+
     def __repr__(self):
         data_str = str(self.data)
         key_str = str(self.key)
         return "Surplus Key: '{0}' => {1}" \
                .format(key_str, data_str)
+
+    def __str__(self):
+        return self.__repr__()

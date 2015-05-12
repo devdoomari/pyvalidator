@@ -1,12 +1,21 @@
 import unittest
-from unittest_extension import ErrorBucketTestCase
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from errorbucket import ErrorBucket
-from validator import Validator
-from errors import WrongType
-from utils import OrderedList
+try:
+    from unittest_extension import ErrorBucketTestCase
+    from errorbucket import ErrorBucket
+    from _errorbucketnode import _ErrorBucketNode as _EBN
+    from validator import Validator
+    from errors import WrongType
+    from utils import OrderedList
+except:
+    from .unittest_extension import ErrorBucketTestCase
+    from ..errorbucket import ErrorBucket
+    from .._errorbucketnode import _ErrorBucketNode as _EBN
+    from ..validator import Validator
+    from ..errors import WrongType
+    from ..utils import OrderedList
 
 
 class TestCustomValidatorSchema(ErrorBucketTestCase):
@@ -40,9 +49,10 @@ class TestCustomValidatorSchema(ErrorBucketTestCase):
             custom_validator, 'Some data',
             errors={
                 'wrong_type':
-                {'': OrderedList(WrongType(str, float), WrongType(str, int))}
+                _EBN([WrongType(str, float), WrongType(str, int)])
             },
-            custom_errors=[{'error_count': 2}])
+            custom_errors=[{'error_count': 2}],
+            debug=True)
 
     def test_transparent_validator(self):
         pass

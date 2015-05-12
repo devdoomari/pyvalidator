@@ -1,12 +1,22 @@
 import unittest
-from unittest_extension import ErrorBucketTestCase
+
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from errorbucket import ErrorBucket
-from validator import Validator, Or
-from errors import WrongType, FuncFail
-from utils import OrderedList
+try:
+    from unittest_extension import ErrorBucketTestCase
+    from errorbucket import ErrorBucket
+    from _errorbucketnode import _ErrorBucketNode as _EBN
+    from validator import Validator, Or
+    from errors import WrongType, FuncFail
+    from utils import OrderedList
+except:
+    from .unittest_extension import ErrorBucketTestCase
+    from ..errorbucket import ErrorBucket
+    from .._errorbucketnode import _ErrorBucketNode as _EBN
+    from ..validator import Validator, Or
+    from ..errors import WrongType, FuncFail
+    from ..utils import OrderedList
 
 
 class TestOrSchema(ErrorBucketTestCase):
@@ -27,10 +37,8 @@ class TestOrSchema(ErrorBucketTestCase):
         self.assertErrorBucket(
             lt7_falsy_validator, 'solongmorethan7',
             errors={
-                'func_fail': {
-                    '': OrderedList(FuncFail(len_lt_7, 'solongmorethan7'),
-                                    FuncFail(always_false, 'solongmorethan7'))
-                }
+                'func_fail': _EBN([FuncFail(len_lt_7, 'solongmorethan7'),
+                                   FuncFail(always_false, 'solongmorethan7')])
             })
 
 

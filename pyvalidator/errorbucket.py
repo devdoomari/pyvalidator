@@ -1,5 +1,10 @@
 import pprint
-from utils import OrderedList
+try:
+    from utils.ordered_list import OrderedList
+    from _errorbucketnode import _ErrorBucketNode
+except:
+    from .utils.ordered_list import OrderedList
+    from ._errorbucketnode import _ErrorBucketNode
 
 global __REPR__
 
@@ -16,7 +21,11 @@ Custom Errors:
 class ErrorBucket(Exception):
     def __init__(self):
         self.errors = {}
+        self.error_count = 0
         self.custom_errors = []
+
+    def __str__(self):
+        return self.__repr__()
 
     def __repr__(self):
         pretty_print = pprint.PrettyPrinter(depth=4)
@@ -25,60 +34,46 @@ class ErrorBucket(Exception):
         return __REPR__.format(self.errors, self.custom_errors)
 
     def addError(self, var_name, err_obj):
+        self.error_count = self.error_count + 1
         err_type = err_obj.error_name
         if err_type not in self.errors:
-            self.errors[err_type] = {}
-        if var_name in self.errors[err_type]:
-            if type(self.errors[err_type][var_name]) != OrderedList:
-                self.errors[err_type][var_name] = \
-                    OrderedList(self.errors[err_type][var_name])
-            self.errors[err_type][var_name].add(err_obj)
+            self.errors[err_type] = _ErrorBucketNode()
+        if var_name is None:
+            self.errors[err_type].errors.append(err_obj)
         else:
-            self.errors[err_type][var_name] = err_obj
+            if var_name not in self.errors[err_type]:
+                self.errors[err_type][var_name] = _ErrorBucketNode()
+            self.errors[err_type][var_name].errors.append(err_obj)
 
     def addCustomError(self, error):
         self.custom_errors.append(error)
 
     def mergeChildBucket(self, child, child_namespace):
-        child_namespace = str(child_namespace)
-        self.__mergeBucket__(child, child_namespace + '.')
+        child_namespace = child_namespace
+        self.__mergeBucket__(child, child_namespace)
 
-    def mergeBucket(self, child):
-        self.__mergeBucket__(child, '')
+    def mergeBucket(self, other):
+        self.__mergeBucket__(other)
 
-    def __mergeBucket__(self, child, append_ns):
-        append_ns = str(append_ns)
-        for err_type in child.errors:
-            child_var_list = child.errors[err_type]
+    def __mergeBucket__(self, other, other_ns=None):
+        self.error_count = self.error_count + other.error_count
+        for err_type in other.errors:
             if err_type not in self.errors:
-                self.errors[err_type] = {}
-            for child_var in child_var_list:
-                new_var_name = append_ns + child_var
-                storage = self.errors[err_type]
-                to_store = child.errors[err_type][child_var]
-                if new_var_name in storage:
-                    if type(storage[new_var_name]) != OrderedList:
-                        storage[new_var_name] = OrderedList(
-                            storage[new_var_name])
-                    storage[new_var_name].add(to_store)
-                else:
-                    storage[new_var_name] = to_store
-        for child_custom_err in child.custom_errors:
-            self.custom_errors.append(child_custom_err)
+                self.errors[err_type] = _ErrorBucketNode()
+
+            if other_ns is not None:
+                if other_ns not in self.errors[err_type]:
+                    self.errors[err_type][other_ns] = _ErrorBucketNode()
+                self.errors[err_type][other_ns].merge(other.errors[err_type])
+            else:
+                self.errors[err_type].merge(other.errors[err_type])
+        self.custom_errors.extend(other.custom_errors)
 
     def isEmpty(self):
         return self.errors == {} and self.custom_errors == []
 
     def countErrors(self):
-        count = 0
-        for err_type in self.errors:
-            for var_name in self.errors[err_type]:
-                var_err = self.errors[err_type][var_name]
-                if type(var_err) == OrderedList:
-                    count = count + len(var_err)
-                else:
-                    count = count + 1
-        return count
+        return self.error_count
 
     def countCustomErrors(self):
         return len(self.custom_errors)

@@ -7,21 +7,28 @@ class MissingKey(Exception):
     def __eq__(self, other):
         return (other.key == self.key and other.data == self.data)
 
+    def __gt__(self, other):
+        return (self.key < other.key or self.data < other.data)
+
+    def __lt__(self, other):
+        return (not self.__gt__(other)) and (not self.__eq__(other))
+
+    def __hash__(self):
+        return (hash(self.error_name) ^ hash(self.key) ^ hash(self.data))
+
     def __cmp__(self, other):
-        if type(other) != type(self):
+        if self.__eq__(other):
+            return 0
+        elif self.__lt__(other):
             return -1
-        if other.data > self.data:
-            return -1
-        elif other.data < self.data:
+        else:
             return 1
-        if other.key < self.key:
-            return 1
-        elif other.key > self.key:
-            return -1
-        return 0
 
     def __repr__(self):
         data_str = str(self.data)
         key_str = str(self.key)
         return "Missing Key: {0} => {1}" \
                .format(key_str, data_str)
+
+    def __str__(self):
+        return self.__repr__()

@@ -1,11 +1,19 @@
 import unittest
-from unittest_extension import ErrorBucketTestCase
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from errorbucket import ErrorBucket
-from validator import Validator
-from errors import WrongType
+try:
+    from unittest_extension import ErrorBucketTestCase
+    from errorbucket import ErrorBucket
+    from _errorbucketnode import _ErrorBucketNode as _EBN
+    from validator import Validator
+    from errors import WrongType
+except:
+    from .unittest_extension import ErrorBucketTestCase
+    from ..errorbucket import ErrorBucket
+    from .._errorbucketnode import _ErrorBucketNode as _EBN
+    from ..validator import Validator
+    from ..errors import WrongType
 
 
 class TestTypeSchema(ErrorBucketTestCase):
@@ -16,7 +24,7 @@ class TestTypeSchema(ErrorBucketTestCase):
         test_error_data = 1234
         self.assertErrorBucket(
             str_validator, test_error_data,
-            errors={'wrong_type': {'': WrongType(int, str)}})
+            errors={'wrong_type': _EBN([WrongType(int, str)])})
 
 
 if __name__ == '__main__':

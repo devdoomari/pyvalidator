@@ -1,8 +1,15 @@
-from errors import NotEqual, WrongType
-from errors import SurplusKey, MissingKey
-from errors import FuncFail, FuncException
-from utils import OrderedList
-from errorbucket import ErrorBucket
+try:
+    from errors import NotEqual, WrongType
+    from errors import SurplusKey, MissingKey
+    from errors import FuncFail, FuncException
+    from utils import OrderedList
+    from errorbucket import ErrorBucket
+except:
+    from .errors import NotEqual, WrongType
+    from .errors import SurplusKey, MissingKey
+    from .errors import FuncFail, FuncException
+    from .utils import OrderedList
+    from .errorbucket import ErrorBucket
 
 COMPARABLE, CALLABLE, VALIDATOR, TYPE, DICT, ITERABLE = range(6)
 
@@ -61,7 +68,7 @@ class Using(object):
             data = self.func(data)
         except Exception as e:
             error = FuncException(self.func, data, e)
-            error_bucket.addError('', error)
+            error_bucket.addError(None, error)
             raise error_bucket
         if self.schema is None:
             return data
@@ -138,7 +145,7 @@ class Validator(object):
         error_bucket = ErrorBucket()
         if self._schema != data:
             error = NotEqual(self._schema, data)
-            error_bucket.addError('', error)
+            error_bucket.addError(None, error)
             raise error_bucket
         return data
 
@@ -148,7 +155,7 @@ class Validator(object):
         error_bucket = ErrorBucket()
         if schema_type(data) is not ITERABLE:
             error = WrongType(type(self._schema), type(data))
-            error_bucket.addError('', error)
+            error_bucket.addError(None, error)
             raise error_bucket
         for (child_index, child_item) in enumerate(data):
             try:
@@ -167,7 +174,7 @@ class Validator(object):
         error_bucket = ErrorBucket()
         if schema_type(data_dict) is not DICT:
             error = WrongType(type(data_dict), type(self._schema))
-            error_bucket.addError('', error)
+            error_bucket.addError(None, error)
             raise error_bucket
         missing_keys = []
         optionals = {}
@@ -188,7 +195,7 @@ class Validator(object):
                 try:
                     data_dict[data_key] = child_validator.validate(data_item)
                 except ErrorBucket as e:
-                    error_bucket.__mergeBucket__(e, data_key)
+                    error_bucket.mergeChildBucket(e, data_key)
             else:
                 surplus_data[data_key] = data_item
                 for optionals_key in optionals:
@@ -230,7 +237,7 @@ class Validator(object):
         if not isinstance(data, self._schema):
             child_type = str(type(data))
             error = WrongType(type(data), self._schema)
-            error_bucket.addError('', error)
+            error_bucket.addError(None, error)
         if not error_bucket.isEmpty():
             raise error_bucket
         return data
@@ -252,10 +259,10 @@ class Validator(object):
             result = self._schema(data)
         except Exception as e:
             error = FuncException(self._schema, data, e)
-            error_bucket.addError('', error)
+            error_bucket.addError(None, error)
         if not result:
             error = FuncFail(self._schema, data)
-            error_bucket.addError('', error)
+            error_bucket.addError(None, error)
         if not error_bucket.isEmpty():
             raise error_bucket
         return data

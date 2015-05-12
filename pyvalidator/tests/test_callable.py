@@ -1,11 +1,19 @@
 import unittest
-from unittest_extension import ErrorBucketTestCase
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from errorbucket import ErrorBucket
-from validator import Validator
-from errors import WrongType, FuncFail
+try:
+    from unittest_extension import ErrorBucketTestCase
+    from errorbucket import ErrorBucket
+    from _errorbucketnode import _ErrorBucketNode as _EBN
+    from validator import Validator
+    from errors import WrongType, FuncFail
+except:
+    from .unittest_extension import ErrorBucketTestCase
+    from ..errorbucket import ErrorBucket
+    from .._errorbucketnode import _ErrorBucketNode as _EBN
+    from ..validator import Validator
+    from ..errors import WrongType, FuncFail
 
 
 class TestCallableSchema(ErrorBucketTestCase):
@@ -27,7 +35,8 @@ class TestCallableSchema(ErrorBucketTestCase):
         always_false_validator = Validator(return_false)
         self.assertErrorBucket(
             always_false_validator, test_data,
-            errors={'func_fail': {'': FuncFail(return_false, test_data)}})
+            errors={'func_fail': _EBN([FuncFail(return_false, test_data)])},
+            debug=True)
 
     def test_is_dict_callable(self):
         ok_data = {'wow': 'so gukky'}
@@ -41,7 +50,8 @@ class TestCallableSchema(ErrorBucketTestCase):
 
         self.assertErrorBucket(
             is_dict_validator, nope_data,
-            errors={'func_fail': {'': FuncFail(is_dict, nope_data)}})
+            errors={'func_fail': _EBN([FuncFail(is_dict, nope_data)])},
+            debug=True)
 
 
 if __name__ == '__main__':

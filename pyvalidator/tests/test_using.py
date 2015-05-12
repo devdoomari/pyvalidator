@@ -1,13 +1,20 @@
-import unittest
-from unittest_extension import ErrorBucketTestCase
+import unittest2 as unittest
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-from errorbucket import ErrorBucket
-from validator import Validator, Using
-from errors import WrongType, FuncFail, FuncException
-from utils import OrderedList
-
+try:
+    from unittest_extension import ErrorBucketTestCase
+    from errorbucket import ErrorBucket
+    from _errorbucketnode import _ErrorBucketNode as _EBN
+    from validator import Validator, Using
+    from errors import WrongType, FuncFail, FuncException
+    from utils import OrderedList
+except:
+    from .unittest_extension import ErrorBucketTestCase
+    from ..errorbucket import ErrorBucket
+    from .._errorbucketnode import _ErrorBucketNode as _EBN
+    from ..validator import Validator, Using
+    from ..errors import WrongType, FuncFail, FuncException
+    from ..utils import OrderedList
 
 class TestUsingSchema(ErrorBucketTestCase):
     def test_typecast(self):
@@ -33,9 +40,9 @@ class TestUsingSchema(ErrorBucketTestCase):
         self.assertErrorBucket(
             exception_validator, 'nope',
             errors={
-                'func_exception':
-                {'': FuncException(raiser, "nope", SomeException())}
-            })
+                'func_exception':_EBN([FuncException(raiser, "nope", SomeException())])
+            },
+            debug=True)
 
 
 if __name__ == '__main__':

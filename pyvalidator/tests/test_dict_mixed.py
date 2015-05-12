@@ -1,14 +1,23 @@
 import unittest
-from unittest_extension import ErrorBucketTestCase
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from errorbucket import ErrorBucket
-from validator import Validator, Optional, CustomMissingkeyError
-from validator import And, Using
-from errors import WrongType, FuncFail, SurplusKey, MissingKey
-from utils import OrderedList
-
+try:
+    from unittest_extension import ErrorBucketTestCase
+    from errorbucket import ErrorBucket
+    from _errorbucketnode import _ErrorBucketNode as _EBN
+    from validator import Validator, Optional, CustomMissingkeyError
+    from validator import And, Using
+    from errors import WrongType, FuncFail, SurplusKey, MissingKey
+    from utils import OrderedList
+except:
+    from .unittest_extension import ErrorBucketTestCase
+    from ..errorbucket import ErrorBucket
+    from .._errorbucketnode import _ErrorBucketNode as _EBN
+    from ..validator import Validator, Optional, CustomMissingkeyError
+    from ..validator import And, Using
+    from ..errors import WrongType, FuncFail, SurplusKey, MissingKey
+    from ..utils import OrderedList
 
 class TestDictMixedSchema(ErrorBucketTestCase):
     def test_mixed_dict(self):
@@ -27,11 +36,13 @@ class TestDictMixedSchema(ErrorBucketTestCase):
                 'nested_dict': [123, 456],
             },
             errors={
-                'wrong_type': {
-                    'some int': WrongType(str, int),
-                    'nested_dict': WrongType(list, dict)
-                },
-                'missing_key': {'customerr': MissingKey('customerr', str)}
+                'wrong_type': _EBN(None,{
+                    'some int': _EBN([WrongType(str, int)]),
+                    'nested_dict': _EBN([WrongType(list, dict)])
+                }),
+                'missing_key': _EBN(None,{
+                    'customerr': _EBN([MissingKey('customerr', str)])
+                })
             },
             custom_errors=['MISSINGKEY T.T'])
 

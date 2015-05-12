@@ -5,24 +5,34 @@ class FuncFail(Exception):
         self.var = var
 
     def __cmp__(self, other):
-        if type(other) != type(self):
+        if self.__eq__(other):
+            return 0
+        elif self.__lt__(other):
             return -1
-        if other.func > self.func:
-            return -1
-        elif other.func < self.func:
+        else:
             return 1
-        if other.var < self.var:
-            return 1
-        elif other.var > self.var:
-            return -1
-        return 0
+
+    def __hash__(self):
+        return (hash(self.error_name) ^ hash(self.func) ^ hash(self.var))
 
     def __eq__(self, other):
         if type(self) != type(other):
             return False
-        return (other.func == self.func and other.var == self.var)
+        return (
+            other.func.__name__ == self.func.__name__ and other.var == self.var
+        )
+
+    def __gt__(self, other):
+        return (self.func.__name__ < other.func.__name__ or
+                self.var < other.var)
+
+    def __lt__(self, other):
+        return (not self.__gt__(other)) and (not self.__eq__(other))
 
     def __repr__(self):
-        func_name = self.func.func_name
+        func_name = self.func.__name__
         return "'{0}'' failed on validation function '{1}'" \
                .format(self.var, func_name)
+
+    def __str__(self):
+        return self.__repr__()

@@ -1,11 +1,19 @@
 import unittest
-from unittest_extension import ErrorBucketTestCase
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from errorbucket import ErrorBucket
-from validator import Validator
-from errors import WrongType
+try:
+    from unittest_extension import ErrorBucketTestCase
+    from errorbucket import ErrorBucket
+    from _errorbucketnode import _ErrorBucketNode as _EBN
+    from validator import Validator
+    from errors import WrongType
+except:
+    from .unittest_extension import ErrorBucketTestCase
+    from ..errorbucket import ErrorBucket
+    from .._errorbucketnode import _ErrorBucketNode as _EBN
+    from ..validator import Validator
+    from ..errors import WrongType
 
 
 class TestIterableSchema(ErrorBucketTestCase):
@@ -24,14 +32,17 @@ class TestIterableSchema(ErrorBucketTestCase):
         test_data = ['hello', 'oh no', 777, 'doge']
         self.assertErrorBucket(
             str_validator, test_data,
-            errors={'wrong_type': {'2': WrongType(int, str)}})
+            errors={'wrong_type': _EBN(None,
+                {2: _EBN([WrongType(int, str)])}
+                )
+            })
 
     def test_not_list(self):
         int_data = 1234
         str_validator = Validator([str])
         self.assertErrorBucket(
             str_validator, int_data,
-            errors={'wrong_type': {'': WrongType(list, int)}})
+            errors={'wrong_type': _EBN([WrongType(list, int)])})
 
 
 if __name__ == '__main__':

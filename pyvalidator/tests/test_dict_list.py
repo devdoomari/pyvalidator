@@ -1,15 +1,23 @@
-import unittest
-from unittest_extension import ErrorBucketTestCase
+import unittest2 as unittest
 from os import sys, path
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from errorbucket import ErrorBucket
-from validator import Validator, Optional, CustomMissingkeyError
-from validator import And, Using
-
-from errors import WrongType, FuncFail, SurplusKey, MissingKey
-from utils import OrderedList
-
+try:
+    from unittest_extension import ErrorBucketTestCase
+    from errorbucket import ErrorBucket
+    from _errorbucketnode import _ErrorBucketNode as _EBN
+    from validator import Validator, Optional, CustomMissingkeyError
+    from validator import And, Using
+    from errors import WrongType, FuncFail, SurplusKey, MissingKey
+    from utils import OrderedList
+except:
+    from .unittest_extension import ErrorBucketTestCase
+    from ..errorbucket import ErrorBucket
+    from .._errorbucketnode import _ErrorBucketNode as _EBN
+    from ..validator import Validator, Optional, CustomMissingkeyError
+    from ..validator import And, Using
+    from ..errors import WrongType, FuncFail, SurplusKey, MissingKey
+    from ..utils import OrderedList
 
 class TestDictList(ErrorBucketTestCase):
     def test_dict_list1(self):
@@ -52,11 +60,40 @@ class TestDictList(ErrorBucketTestCase):
                  'age': '20',
                  'sex': 'Male'}]
         self.assertErrorBucket(validator, data, errors={
-            'func_fail': {'0.sex': FuncFail(is_gender, 'middle')},
-            'surplus_key': {'2.nameto': SurplusKey('nameto', 'Sacha')},
-            'missing_key': {'2.name': MissingKey('name', And(str, len))}
+            'func_fail': _EBN(None,
+                              {0:_EBN(None,
+                                      {'sex': _EBN([FuncFail(is_gender, 'middle')])}
+                                      )}
+                              ),
+            'surplus_key': _EBN(None,
+                                {2:_EBN(None, 
+                                        {'nameto': _EBN([SurplusKey('nameto', 'Sacha')])
+                                        }
+                                        )
+                                }),
+            'missing_key': _EBN(None,
+                                {2:_EBN(None,
+                                        {'name': _EBN([MissingKey('name', And(str, len))])}
+                                        )
+                                }
+                              )
         }, debug=True)
 
+    def test_dict_list3(self):
+        is_gender = lambda s: s in ('male', 'female')
+        validator = Validator([{
+            'sex': And(str, Using(str.lower), is_gender)
+        }])
+
+        data = [{
+                 'sex': 'woah not yet'}]
+        self.assertErrorBucket(validator, data, errors={
+            'func_fail': _EBN(None,
+                              {0:_EBN(None, 
+                                      {'sex': _EBN([FuncFail(is_gender, 'woah not yet')])}
+                                      )}
+                              )
+        }, debug=True)
 
 if __name__ == '__main__':
     unittest.main()

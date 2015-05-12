@@ -20,8 +20,14 @@ class NotEqual(Exception):
             return -1
         return 0
 
+    def __hash__(self):
+        return (hash(self.error_name) ^ hash(self.instead_of) ^ hash(self.got))
+
     def __repr__(self):
         got_str = str(self.got)
         instead_of_str = str(self.instead_of)
         return "Not Equal: got {0} instead of {1}" \
                .format(got_str, instead_of_str)
+
+    def __str__(self):
+        return self.__repr__()

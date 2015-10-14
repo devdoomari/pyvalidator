@@ -23,7 +23,7 @@ class And(object):
                            ', '.join(repr(a) for a in self._args))
 
     def __eq__(self, other):
-        return self._args == other._args
+        return type(self) == type(other) and self._args == other._args
 
     def validate(self, data):
         child_validators = []

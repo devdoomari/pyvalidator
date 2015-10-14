@@ -2,6 +2,7 @@ MANIFEST.in
 README.rst
 setup.py
 pyvalidator/__init__.py
+pyvalidator/_errorbucketnode.py
 pyvalidator/errorbucket.py
 pyvalidator/validator.py
 pyvalidator.egg-info/PKG-INFO
@@ -28,10 +29,12 @@ pyvalidator/tests/test_dict.py
 pyvalidator/tests/test_dict_list.py
 pyvalidator/tests/test_dict_mixed.py
 pyvalidator/tests/test_errorbucket.py
+pyvalidator/tests/test_errorbucketnode.py
 pyvalidator/tests/test_iterableschema.py
 pyvalidator/tests/test_or.py
 pyvalidator/tests/test_typeschema.py
 pyvalidator/tests/test_using.py
 pyvalidator/tests/unittest_extension.py
 pyvalidator/utils/__init__.py
+pyvalidator/utils/hashable_dict.py
 pyvalidator/utils/ordered_list.py

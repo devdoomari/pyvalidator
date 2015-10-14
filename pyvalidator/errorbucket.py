@@ -33,6 +33,10 @@ class ErrorBucket(Exception):
         custom_errors = pretty_print.pformat(self.custom_errors)
         return __REPR__.format(self.errors, self.custom_errors)
 
+    @property
+    def message(self):
+        return self.__repr__()
+
     def addError(self, var_name, err_obj):
         self.error_count = self.error_count + 1
         err_type = err_obj.error_name

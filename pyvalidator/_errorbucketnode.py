@@ -1,4 +1,4 @@
-class _ErrorBucketNode(object):
+class _ErrorBucketNode(Exception):
     def __init__(self, _errors=None, _error_dict=None):
         self.errors = _errors or []
         self.error_dict = _error_dict or {}
@@ -28,6 +28,10 @@ class _ErrorBucketNode(object):
     def __str__(self):
         return self.__repr__()
 
+    @property
+    def message(self):
+        return self.__repr__()
+
     def __repr__(self):
         if self.errors == [] and self.error_dict == {}:
             return "<NoError>"
@@ -46,7 +50,7 @@ class _ErrorBucketNode(object):
             if other_key not in self.error_dict:
                 self.error_dict[other_key] = _ErrorBucketNode()
             self.error_dict[other_key].merge(other.error_dict[other_key], recursion_nth+1)
-            
+
 
     def is_empty(self):
         return self.errors == [] and self.error_dict == {}

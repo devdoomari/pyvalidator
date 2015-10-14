@@ -117,7 +117,12 @@ PyValidator's output demo:
     >>> error.errors['missing_key']['such'].errors[0].data
     'validation'
 
-Note that you can
+Rationale for _ErrorBucketNode instead of dict / list
+------------------------------------------------------------------------
+
+
+** Any suggestion for _ErrorBucketNode is welcome :)
+   (_ErrorBucketNode itself is somewhat ugly) **
 
 
 Installation
@@ -129,13 +134,3 @@ Use `pip <http://pip-installer.org>`_ or easy_install::
 
 - **pyvalidator** is tested with Python 2.6, 2.7, and 3.x
 - **pyvalitator** follows `semantic versioning <http://semver.org>`_.
-
-How ``Validator`` validates data
--------------------------------------------------------------------------------
-
-Types
-~~~~~
-
-If ``Validator(...)`` encounters a type (such as ``int``, ``str``, ``object``,
-etc.), it will check if the corresponding piece of data is an instance of that type,
-otherwise it will raise ``ErrorBucket``.
